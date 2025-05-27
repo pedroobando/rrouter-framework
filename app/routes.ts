@@ -14,6 +14,8 @@ export default [
       index('routes/auth/login-page.tsx'),
       // ruta register
       route('register', 'routes/auth/register-page.tsx'),
+      route('testing', 'routes/auth/testing-page.tsx'),
+      route('testing-args/:id/:name/:age', 'routes/auth/testing-args-page.tsx'),
     ]),
   ]),
 
@@ -22,7 +24,7 @@ export default [
       // INFO: ruta principal
       index('routes/chat/no-chat-select-page.tsx'),
       // INFO: Cuando se le indica un cliente
-      route(':clientId', 'routes/chat/client-chat-page.tsx'),
+      route('client/:clientId', 'routes/chat/client-chat-page.tsx'),
     ]),
   ]),
 ] satisfies RouteConfig;

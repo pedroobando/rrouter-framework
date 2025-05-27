@@ -1,9 +1,20 @@
 import { Link, Outlet } from 'react-router';
 import { X } from 'lucide-react';
+import type { Route } from './+types/chat-layout';
 import { Button } from '~/components/ui/button';
 import { CloseSecction, ContactList, ContactNoSelected } from '~/chat/components';
+import { getClients } from '~/fakes/fake-data';
 
-const ChatLayout = () => {
+export async function loader() {
+  console.log('ChatLayout loader called');
+  const clients = await getClients();
+  console.log(clients);
+  return { clients };
+}
+
+const ChatLayout = ({ loaderData }: Route.ComponentProps) => {
+  const { clients } = loaderData;
+  // console.log('ChatLayout loaderData:', loaderData.clients[2].email);
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
@@ -16,7 +27,7 @@ const ChatLayout = () => {
             </Link>
           </div>
         </div>
-        <ContactList />
+        <ContactList clients={clients} />
         <CloseSecction />
       </div>
 
