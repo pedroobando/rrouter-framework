@@ -1,36 +1,92 @@
-import { Link, useNavigate } from 'react-router';
+import { useEffect } from 'react';
+import { data, Form, Link, redirect } from 'react-router';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent } from '~/components/ui/card';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import placeholder from '~/assets/placeholder.svg';
-import { useForm, type SubmitHandler } from 'react-hook-form';
 
-interface LoginInputs {
-  email: string;
-  password: string;
+import type { Route } from './+types/login-page';
+import { commitSession, getSession } from '~/sessions.server';
+import { validateCredentials } from '~/fakes/fake-data';
+
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const session = await getSession(request.headers.get('Cookie'));
+  console.log('Session:', session.has('userId'));
+
+  if (session.get('userId')) {
+    return redirect('/chat');
+  }
+
+  return data(
+    { error: session.get('error') },
+    {
+      headers: {
+        'Set-Cookie': await commitSession(session),
+      },
+    }
+  );
+};
+
+export async function action({ request }: Route.ActionArgs) {
+  const session = await getSession(request.headers.get('Cookie'));
+  const form = await request.formData();
+  const email = form.get('email') ?? '';
+  const password = form.get('password') ?? '';
+
+  // console.log(form);
+  const userId = await validateCredentials(email.toString(), password.toString());
+
+  if (userId === undefined) {
+    session.flash('error', 'Invalid username/password');
+
+    // Redirect back to the login page with errors.
+    // return redirect('/auth?error=Invalid Email', {
+    //   headers: {
+    //     'Set-Cookie': await commitSession(session),
+    //   },
+    // });
+
+    return data(
+      { error: 'Invalid username/password' },
+      {
+        headers: {
+          'Set-Cookie': await commitSession(session),
+        },
+        status: 400, // Bad Request
+        statusText: 'Bad Request',
+      }
+    );
+  }
+
+  session.set('userId', userId.id);
+  session.set('name', userId.name);
+  session.set('token', userId.token);
+
+  // Login succeeded, send them to the home page.
+  return redirect('/', {
+    headers: {
+      'Set-Cookie': await commitSession(session),
+    },
+  });
 }
 
-const LoginPage = () => {
-  const navigate = useNavigate();
+const LoginPage = ({ actionData }: Route.ComponentProps) => {
+  // console.log(actionData);
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<LoginInputs>();
-
-  const onSubmit: SubmitHandler<LoginInputs> = (data) => {
-    console.log(data);
-    navigate('/chat', { replace: true });
-  };
+  useEffect(() => {
+    if (actionData?.error) {
+      // Display the error message to the user
+      alert(actionData.error);
+    }
+    // You can also set a state variable to display the error in the UI
+  }, [actionData]);
 
   return (
     <div className="flex flex-col gap-6">
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8" onSubmit={handleSubmit(onSubmit)}>
+          <Form method="post" action="/auth" className="p-6 md:p-8">
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
                 <h1 className="text-2xl font-bold">Welcome back</h1>
@@ -42,9 +98,8 @@ const LoginPage = () => {
                   id="email"
                   type="email"
                   placeholder="m@example.com"
-                  {...register('email', {
-                    required: { message: 'El correo electronico es requerido', value: true },
-                  })}
+                  autoComplete="email"
+                  name="email"
                 />
               </div>
               <div className="grid gap-2">
@@ -57,9 +112,9 @@ const LoginPage = () => {
                 <Input
                   id="password"
                   type="password"
-                  {...register('password', {
-                    required: { message: 'Indique el password o contrase~na', value: true },
-                  })}
+                  placeholder="••••••••"
+                  autoComplete="current-password"
+                  name="password"
                 />
               </div>
               <Button type="submit" className="w-full">
@@ -106,7 +161,7 @@ const LoginPage = () => {
                 </Link>
               </div>
             </div>
-          </form>
+          </Form>
           <div className="relative hidden bg-muted md:block">
             <img
               src={placeholder}

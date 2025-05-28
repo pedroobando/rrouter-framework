@@ -1,20 +1,27 @@
-import { Link, Outlet } from 'react-router';
+import { Link, Outlet, redirect } from 'react-router';
 import { X } from 'lucide-react';
 import type { Route } from './+types/chat-layout';
 import { Button } from '~/components/ui/button';
 import { CloseSecction, ContactList, ContactNoSelected } from '~/chat/components';
 import { getClients } from '~/fakes/fake-data';
+import { getSession } from '~/sessions.server';
 
-export async function loader() {
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const session = await getSession(request.headers.get('Cookie'));
+
+  if (!session.has('userId')) {
+    return redirect('/auth');
+  }
+
   console.log('ChatLayout loader called');
   const clients = await getClients();
-  console.log(clients);
+
   return { clients };
-}
+};
 
 const ChatLayout = ({ loaderData }: Route.ComponentProps) => {
   const { clients } = loaderData;
-  // console.log('ChatLayout loaderData:', loaderData.clients[2].email);
+
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}

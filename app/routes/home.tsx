@@ -1,7 +1,5 @@
-import { useNavigate } from 'react-router';
+import { redirect } from 'react-router';
 import type { Route } from '../+types/root';
-import { Welcome } from '../welcome/welcome';
-import { useEffect } from 'react';
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -10,11 +8,11 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export default function Home() {
-  const navigate = useNavigate();
-  useEffect(() => {
-    navigate('/auth', { replace: true });
-  }, []);
+export const loader = async ({ params }: Route.LoaderArgs) => {
+  // console.log(`Params: ${JSON.stringify(params, null, 2)}`);
+  return redirect('/auth');
+};
 
-  return <main></main>;
+export default function Home() {
+  return <main></main>; // <Navigate to="/auth" replace />;
 }

@@ -1,13 +1,21 @@
 import { type Client, type Message, Plan } from '@/chat/interfaces/chat.interface';
 import { sleep } from '@/lib/sleep';
 
+export const validateCredentials = async (email: string, password: string) => {
+  // await sleep(1000);
+  // Simulate a credential check
+  if (email === 'peter@gmail.com') {
+    return await loginUser();
+  }
+};
+
 // ! Auth
 export const loginUser = async () => {
-  await sleep(1200);
+  await sleep(900);
   return {
     id: 'U1-12345',
-    name: 'Fernando Herrera',
-    email: 'fherrera@gmail.com',
+    name: 'Peter Eduard',
+    email: 'peter@gmail.com',
     token: 'token-1234567890',
   };
 };
