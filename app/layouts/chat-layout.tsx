@@ -2,9 +2,13 @@ import { Link, Outlet, redirect } from 'react-router';
 import { X } from 'lucide-react';
 import type { Route } from './+types/chat-layout';
 import { Button } from '~/components/ui/button';
-import { CloseSecction, ContactList, ContactNoSelected } from '~/chat/components';
+import { CloseSecction, ContactInformationCard, ContactList } from '~/chat/components';
 import { getClients } from '~/fakes/fake-data';
 import { getSession } from '~/sessions.server';
+
+export function meta({}: Route.MetaArgs) {
+  return [{ title: 'Chat' }, { name: 'description', content: 'Chat with your contacts' }];
+}
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const session = await getSession(request.headers.get('Cookie'));
@@ -13,14 +17,18 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     return redirect('/auth');
   }
 
-  console.log('ChatLayout loader called');
+  // console.log('ChatLayout loader called');
+  const userName = session.get('name');
   const clients = await getClients();
 
-  return { clients };
+  return {
+    clients,
+    userName,
+  };
 };
 
 const ChatLayout = ({ loaderData }: Route.ComponentProps) => {
-  const { clients } = loaderData;
+  const { clients, userName } = loaderData;
 
   return (
     <div className="flex h-screen bg-background">
@@ -29,8 +37,8 @@ const ChatLayout = ({ loaderData }: Route.ComponentProps) => {
         <div className="p-4 border-b">
           <div className="flex items-center gap-2">
             <div className="h-6 w-6 rounded-full bg-primary" />
-            <Link to="/" className="font-semibold">
-              <span>NexTalk</span>
+            <Link to="/chat" className="font-semibold">
+              <span>{userName}</span>
             </Link>
           </div>
         </div>
@@ -61,9 +69,7 @@ const ChatLayout = ({ loaderData }: Route.ComponentProps) => {
           <div className="h-14 border-b px-4 flex items-center">
             <h2 className="font-medium">Contact details</h2>
           </div>
-          {/* <ClientInfo /> */}
-          {/* <ClientSkeleton /> */}
-          <ContactNoSelected />
+          <ContactInformationCard />
         </div>
       </div>
     </div>

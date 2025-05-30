@@ -3,3 +3,4 @@ export { ContactList } from './Contact-list';
 export { ContactInfo } from './contacts-information/Contact-info';
 export { ContactSkeleton } from './contacts-information/Contact-skeleton';
 export { ContactNoSelected } from './contacts-information/Contact-no-selected';
+export { ContactInformationCard } from './Contact-information-card';

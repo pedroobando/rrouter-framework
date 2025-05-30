@@ -4,14 +4,25 @@ import { Button } from '~/components/ui/button';
 import { ScrollArea } from '~/components/ui/scroll-area';
 import { Textarea } from '~/components/ui/textarea';
 
+import type { Route } from './+types/client-chat-page';
+import { getClientMessages } from '~/fakes/fake-data';
+
 interface Message {
   role: 'agent' | 'user';
   content: string;
   timestamp: string;
 }
 
+export const loader = async ({ request }: Route.ActionArgs) => {
+  const codigo = request.url.toString().slice(-8);
+
+  const message = await getClientMessages(codigo);
+  return { codigo, message };
+};
+
 const ClientChatPage = () => {
   const [input, setInput] = useState('');
+
   const [messages] = useState<Message[]>([
     {
       role: 'agent',

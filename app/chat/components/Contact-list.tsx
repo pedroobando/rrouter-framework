@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { NavLink } from 'react-router';
+import { NavLink, useParams } from 'react-router';
 import { Button } from '~/components/ui/button';
 import { ScrollArea } from '~/components/ui/scroll-area';
 import type { Client } from '../interfaces/chat.interface';
@@ -9,6 +9,8 @@ interface ContactListProps {
 }
 
 export const ContactList: FC<ContactListProps> = ({ clients }) => {
+  const { clientId } = useParams();
+  // console.log(clientId);
   return (
     <ScrollArea className="h-[calc(100vh-134px)]">
       <div className="space-y-4 p-4">
@@ -19,16 +21,18 @@ export const ContactList: FC<ContactListProps> = ({ clients }) => {
               <NavLink
                 key={client.id}
                 to={`/chat/client/${client.id}`}
-                className={({ isActive }) =>
-                  `flex w-full justify-start my-2 p-1 rounded-xl transition-all duration-300 ${
-                    isActive ? 'bg-primary/10' : ''
-                  }`
+                className={({ isActive, isPending }) =>
+                  isActive
+                    ? `flex w-full justify-start my-2 p-1 gap-2 rounded-xl bg-primary/30 transition-all duration-300`
+                    : isPending
+                    ? `flex w-full justify-start my-2 p-1 gap-2 rounded-xl bg-primary/20 transition-all duration-300`
+                    : `flex w-full justify-start my-2 p-1 gap-2 rounded-xl transition-all duration-300`
                 }
               >
                 <div className="h-6 w-6 rounded-full bg-primary/20 mr-2 flex-shrink-0 flex items-center justify-center text-white text-xs">
-                  {client.name[0]}
+                  {client.name.charAt(0).toUpperCase() + client.name.charAt(1).toLowerCase()}
                 </div>
-                <span className="text-gray-400">{client.name}</span>
+                <span className={clientId === client.id ? 'text-base' : 'text-gray-400'}>{client.name}</span>
               </NavLink>
             ))}
           </div>

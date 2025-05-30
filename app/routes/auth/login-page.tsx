@@ -12,7 +12,7 @@ import { validateCredentials } from '~/fakes/fake-data';
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const session = await getSession(request.headers.get('Cookie'));
-  console.log('Session:', session.has('userId'));
+  // console.log('Session:', session.has('userId'));
 
   if (session.get('userId')) {
     return redirect('/chat');
