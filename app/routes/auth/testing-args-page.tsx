@@ -1,4 +1,4 @@
-import { data, Link } from 'react-router';
+import { Link } from 'react-router';
 import type { Route } from './+types/testing-args-page';
 import { sleep } from '~/lib/sleep';
 
@@ -76,6 +76,10 @@ export default function MyRouteComponent({ loaderData, actionData, params, match
   return (
     <div>
       <h1 className="font-bold text-2xl">Testing Args Page</h1>
+      <h2 className="font-bold text-3xl">Name: {name}</h2>
+      <h3 className="font-bold text-2xl">Id: {id}</h3>
+      <h3 className="font-bold text-2xl">Age: {age}</h3>
+
       <p>Loader Data: {JSON.stringify(loaderData)}</p>
       <p>Action Data: {JSON.stringify(actionData)}</p>
       <p>Route Parameters: {JSON.stringify(params)}</p>

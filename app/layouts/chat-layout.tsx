@@ -10,16 +10,27 @@ export function meta({}: Route.MetaArgs) {
   return [{ title: 'Chat' }, { name: 'description', content: 'Chat with your contacts' }];
 }
 
-export const loader = async ({ request }: Route.LoaderArgs) => {
+export const loader = async ({ request, params }: Route.LoaderArgs) => {
   const session = await getSession(request.headers.get('Cookie'));
+  const { clientId } = params;
 
   if (!session.has('userId')) {
     return redirect('/auth');
   }
 
-  // console.log('ChatLayout loader called');
   const userName = session.get('name');
   const clients = await getClients();
+  if (clientId) {
+    const client = clients.find((c) => c.id === clientId);
+
+    return {
+      clients,
+      userName,
+      client,
+    };
+  }
+
+  // console.log('ChatLayout loader called');
 
   return {
     clients,

@@ -30,4 +30,7 @@ export default [
       route('client/:clientId', 'routes/chat/client-chat-page.tsx'),
     ]),
   ]),
+
+  // INFO: Products
+  route('products/:name', 'routes/products-page.tsx'),
 ] satisfies RouteConfig;

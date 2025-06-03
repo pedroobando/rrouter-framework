@@ -8,18 +8,15 @@ import { ContactInfo } from './contacts-information/Contact-info';
 
 export const ContactInformationCard: FC = () => {
   const { clientId } = useParams();
-  const { clients } = useLoaderData();
+  const { client } = useLoaderData();
   const { state } = useNavigation();
 
-  const isPending = state === 'loading';
+  if (client) return <ContactInfo client={client} />;
 
+  const isPending = state === 'loading';
   if (isPending) return <ContactSkeleton />;
 
   if (!clientId) return <ContactNoSelected />;
 
-  const client = clients.find((client: Client) => client.id === clientId);
-
   if (!client) return <ContactNoSelected />;
-
-  return <ContactInfo client={client} />;
 };
